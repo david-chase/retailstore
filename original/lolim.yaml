@@ -155,7 +155,7 @@ spec:
             periodSeconds: 3
           resources:
             limits:
-              memory: 40Mi
+              memory: 70Mi
             requests:
               cpu: 50m
               memory: 30Mi
@@ -221,7 +221,7 @@ spec:
               protocol: TCP
           resources:
             limits:
-              memory: 60Mi
+              memory: 90Mi
             requests:
               cpu: 32m
               memory: 50Mi              
@@ -372,7 +372,7 @@ spec:
             periodSeconds: 3
           resources:
             limits:
-              memory: 60Mi
+              memory: 90Mi
             requests:
               cpu: 32m
               memory: 60Mi
@@ -419,7 +419,7 @@ spec:
               protocol: TCP
           resources:
             limits:
-              memory: 50Mi
+              memory: 80Mi
             requests:
               cpu: 30m
               memory: 50Mi
@@ -618,7 +618,7 @@ spec:
             periodSeconds: 3
           resources:
             limits:
-              memory: 20Mi
+              memory: 85Mi
             requests:
               cpu: 16m
               memory: 20Mi
@@ -684,7 +684,7 @@ spec:
               protocol: TCP
           resources:
             limits:
-              memory: 10Mi
+              memory: 55Mi
             requests:
               cpu: 32m
               memory: 10Mi
@@ -734,7 +734,7 @@ spec:
             mountPath: "/var/lib/rabbitmq/mnesia"
           resources:
             limits:
-              memory: 50Mi
+              memory: 85Mi
             requests:
               cpu: 32m
               memory: 40Mi
@@ -877,7 +877,7 @@ spec:
             periodSeconds: 3
           resources:
             limits:
-              memory: 10Mi
+              memory: 85Mi
             requests:
               cpu: 64m
               memory: 10Mi
@@ -924,10 +924,10 @@ spec:
               protocol: TCP
           resources:
             limits:
-              memory: 50Mi
+              memory: 8Mi
             requests:
               cpu: 32m
-              memory: 50Mi
+              memory: 10Mi
 ---
 # Source: retail-store-sample-assets-chart/templates/serviceaccount.yaml
 apiVersion: v1
@@ -1034,9 +1034,9 @@ spec:
             periodSeconds: 3
           resources:
             limits:
-              memory: 20Mi
+              memory: 15Mi
             requests:
-              cpu: 96m
+              cpu: 25m
               memory: 10Mi
           volumeMounts:
             - mountPath: /tmp
@@ -1168,7 +1168,7 @@ spec:
             periodSeconds: 3
           resources:
             limits:
-              memory: 30Mi
+              memory: 85Mi
             requests:
               cpu: 60m
               memory: 20Mi

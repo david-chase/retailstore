@@ -155,9 +155,9 @@ spec:
             periodSeconds: 3
           resources:
             limits:
-              memory: 256Mi
+              memory: 300Mi
             requests:
-              cpu: 50m
+              cpu: 20m
               memory: 64Mi
           volumeMounts:
             - mountPath: /tmp
@@ -221,9 +221,9 @@ spec:
               protocol: TCP
           resources:
             limits:
-              memory: 512Mi
+              memory: 768Mi
             requests:
-              cpu: 30m
+              cpu: 10m
               memory: 90Mi
           volumeMounts:
             - mountPath: /tmp
@@ -378,7 +378,7 @@ spec:
             limits:
               memory: 512Mi
             requests:
-              cpu: 10m
+              cpu: 5m
               memory: 128Mi
           volumeMounts:
             - mountPath: /tmp
@@ -425,7 +425,7 @@ spec:
             limits:
               memory: 512Mi
             requests:
-              cpu: 30m
+              cpu: 5m
               memory: 128Mi
 ---
 # Source: retail-store-sample-orders-chart/templates/serviceaccount.yaml
@@ -622,9 +622,9 @@ spec:
             periodSeconds: 3
           resources:
             limits:
-              memory: 512Mi
+              memory: 1000Mi
             requests:
-              cpu: 20m
+              cpu: 35m
               memory: 40Mi
           volumeMounts:
             - mountPath: /tmp
@@ -688,9 +688,9 @@ spec:
               protocol: TCP
           resources:
             limits:
-              memory: 512Mi
+              memory: 768Mi
             requests:
-              cpu: 40m
+              cpu: 10m
               memory: 60Mi
           volumeMounts:
             - mountPath: /tmp
@@ -741,9 +741,9 @@ spec:
             mountPath: "/var/lib/rabbitmq/mnesia"
           resources:
             limits:
-              memory: 512Mi
+              memory: 728Mi
             requests:
-              cpu: 30m
+              cpu: 15m
               memory: 30Mi
           volumeMounts:
             - mountPath: /tmp
@@ -890,7 +890,7 @@ spec:
             limits:
               memory: 256Mi
             requests:
-              cpu: 60m
+              cpu: 15m
               memory: 50Mi
           volumeMounts:
             - mountPath: /tmp
@@ -937,7 +937,7 @@ spec:
             limits:
               memory: 512Mi
             requests:
-              cpu: 20m
+              cpu: 10m
               memory: 80Mi
 ---
 # Source: retail-store-sample-assets-chart/templates/serviceaccount.yaml
@@ -1047,7 +1047,7 @@ spec:
             limits:
               memory: 128Mi
             requests:
-              cpu: 70m
+              cpu: 12m
               memory: 30Mi
           volumeMounts:
             - mountPath: /tmp
@@ -1181,7 +1181,7 @@ spec:
             limits:
               memory: 512Mi
             requests:
-              cpu: 60m
+              cpu: 5m
               memory: 20Mi
           volumeMounts:
             - mountPath: /tmp
