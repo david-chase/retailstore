@@ -155,7 +155,7 @@ spec:
             periodSeconds: 3
           resources:
             limits:
-              memory: 300Mi
+              memory: 320Mi
             requests:
               cpu: 20m
               memory: 64Mi
@@ -221,7 +221,7 @@ spec:
               protocol: TCP
           resources:
             limits:
-              memory: 768Mi
+              memory: 1000Mi
             requests:
               cpu: 10m
               memory: 90Mi
@@ -622,7 +622,7 @@ spec:
             periodSeconds: 3
           resources:
             limits:
-              memory: 1000Mi
+              memory: 1100Mi
             requests:
               cpu: 35m
               memory: 40Mi
@@ -688,7 +688,7 @@ spec:
               protocol: TCP
           resources:
             limits:
-              memory: 768Mi
+              memory: 1000Mi
             requests:
               cpu: 10m
               memory: 60Mi
@@ -741,7 +741,7 @@ spec:
             mountPath: "/var/lib/rabbitmq/mnesia"
           resources:
             limits:
-              memory: 728Mi
+              memory: 1000Mi
             requests:
               cpu: 15m
               memory: 30Mi

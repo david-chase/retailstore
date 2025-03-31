@@ -79,6 +79,197 @@ spec:
     app.kubernetes.io/component: service
     app.kuberneres.io/owner: retail-store-sample
 ---
+# Source: retail-store-sample-assets-chart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: assets
+  labels:
+    helm.sh/chart: assets-0.8.4
+    app.kubernetes.io/name: assets
+    app.kubernetes.io/instance: assets
+    app.kubernetes.io/component: service
+    app.kuberneres.io/owner: retail-store-sample
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 3
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: assets
+      app.kubernetes.io/instance: assets
+      app.kubernetes.io/component: service
+      app.kuberneres.io/owner: retail-store-sample
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: assets
+        app.kubernetes.io/instance: assets
+        app.kubernetes.io/component: service
+        app.kuberneres.io/owner: retail-store-sample
+    spec:
+      serviceAccountName: assets
+      securityContext:
+        {}
+      containers:
+        - name: assets
+          envFrom:
+            - configMapRef:
+                name: assets
+          securityContext:
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: false
+          image: "public.ecr.aws/aws-containers/retail-store-sample-assets:0.8.4"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health.html
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 3
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp-volume
+          resources:
+            requests:
+              cpu: 10m
+              memory: 10Mi
+            limits:
+              memory: 60Mi              
+      volumes:
+        - name: tmp-volume
+          emptyDir:
+            medium: Memory
+---
+# Source: retail-store-sample-cart-chart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: carts
+  labels:
+    helm.sh/chart: carts-0.8.4
+    app.kubernetes.io/name: carts
+    app.kubernetes.io/instance: carts
+    app.kubernetes.io/component: service
+    app.kuberneres.io/owner: retail-store-sample
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 3
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: carts
+      app.kubernetes.io/instance: carts
+      app.kubernetes.io/component: service
+      app.kuberneres.io/owner: retail-store-sample
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /actuator/prometheus
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+      labels:
+        app.kubernetes.io/name: carts
+        app.kubernetes.io/instance: carts
+        app.kubernetes.io/component: service
+        app.kuberneres.io/owner: retail-store-sample
+    spec:
+      serviceAccountName: carts
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: carts
+          env:
+            - name: JAVA_OPTS
+              value: -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/urandom
+          envFrom:
+            - configMapRef:
+                name: carts
+          securityContext:
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+          image: "public.ecr.aws/aws-containers/retail-store-sample-cart:0.8.4"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 45
+            periodSeconds: 3
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp-volume
+          resources:
+            requests:
+              cpu: 10m
+              memory: 360Mi
+            limits:
+              memory: 560Mi              
+      volumes:
+        - name: tmp-volume
+          emptyDir:
+            medium: Memory
+---
+# Source: retail-store-sample-cart-chart/templates/dynamodb-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: carts-dynamodb
+  labels:
+    helm.sh/chart: carts-0.8.4
+    app.kubernetes.io/name: carts
+    app.kubernetes.io/instance: carts
+    app.kubernetes.io/component: dynamodb
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: carts
+      app.kubernetes.io/instance: carts
+      app.kubernetes.io/component: dynamodb
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: carts
+        app.kubernetes.io/instance: carts
+        app.kubernetes.io/component: dynamodb
+    spec:
+      containers:
+        - name: dynamodb
+          image: "amazon/dynamodb-local:1.20.0"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: dynamodb
+              containerPort: 8000
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 10m
+              memory: 210Mi
+            limits:
+              memory: 610Mi              
+---
 # Source: retail-store-sample-catalog-chart/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -153,15 +344,15 @@ spec:
               port: 8080
             initialDelaySeconds: 30
             periodSeconds: 3
-          resources:
-            limits:
-              memory: 1500Mi
-            requests:
-              cpu: 440m
-              memory: 920Mi
           volumeMounts:
             - mountPath: /tmp
               name: tmp-volume
+          resources:
+            requests:
+              cpu: 10m
+              memory: 60Mi
+            limits:
+              memory: 60Mi              
       volumes:
         - name: tmp-volume
           emptyDir:
@@ -220,11 +411,11 @@ spec:
               containerPort: 3306
               protocol: TCP
           resources:
-            limits:
-              memory: 3000Mi
             requests:
-              cpu: 440m
-              memory: 3000Mi              
+              cpu: 10m
+              memory: 510Mi
+            limits:
+              memory: 960Mi              
       volumes:
       - name: data
         emptyDir: {}
@@ -304,126 +495,6 @@ spec:
     app.kubernetes.io/instance: carts
     app.kubernetes.io/component: service
     app.kuberneres.io/owner: retail-store-sample
----
-# Source: retail-store-sample-cart-chart/templates/deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: carts
-  labels:
-    helm.sh/chart: carts-0.8.4
-    app.kubernetes.io/name: carts
-    app.kubernetes.io/instance: carts
-    app.kubernetes.io/component: service
-    app.kuberneres.io/owner: retail-store-sample
-    app.kubernetes.io/managed-by: Helm
-spec:
-  replicas: 3
-  strategy:
-    rollingUpdate:
-      maxUnavailable: 1
-    type: RollingUpdate
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: carts
-      app.kubernetes.io/instance: carts
-      app.kubernetes.io/component: service
-      app.kuberneres.io/owner: retail-store-sample
-  template:
-    metadata:
-      annotations:
-        prometheus.io/path: /actuator/prometheus
-        prometheus.io/port: "8080"
-        prometheus.io/scrape: "true"
-      labels:
-        app.kubernetes.io/name: carts
-        app.kubernetes.io/instance: carts
-        app.kubernetes.io/component: service
-        app.kuberneres.io/owner: retail-store-sample
-    spec:
-      serviceAccountName: carts
-      securityContext:
-        fsGroup: 1000
-      containers:
-        - name: carts
-          env:
-            - name: JAVA_OPTS
-              value: -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/urandom
-          envFrom:
-            - configMapRef:
-                name: carts
-          securityContext:
-            capabilities:
-              drop:
-              - ALL
-            readOnlyRootFilesystem: true
-            runAsNonRoot: true
-            runAsUser: 1000
-          image: "public.ecr.aws/aws-containers/retail-store-sample-cart:0.8.4"
-          imagePullPolicy: IfNotPresent
-          ports:
-            - name: http
-              containerPort: 8080
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /actuator/health/liveness
-              port: 8080
-            initialDelaySeconds: 45
-            periodSeconds: 3
-          resources:
-            limits:
-              memory: 3000Mi
-            requests:
-              cpu: 440m
-              memory: 1800Mi
-          volumeMounts:
-            - mountPath: /tmp
-              name: tmp-volume
-      volumes:
-        - name: tmp-volume
-          emptyDir:
-            medium: Memory
----
-# Source: retail-store-sample-cart-chart/templates/dynamodb-deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: carts-dynamodb
-  labels:
-    helm.sh/chart: carts-0.8.4
-    app.kubernetes.io/name: carts
-    app.kubernetes.io/instance: carts
-    app.kubernetes.io/component: dynamodb
-    app.kubernetes.io/managed-by: Helm
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: carts
-      app.kubernetes.io/instance: carts
-      app.kubernetes.io/component: dynamodb
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: carts
-        app.kubernetes.io/instance: carts
-        app.kubernetes.io/component: dynamodb
-    spec:
-      containers:
-        - name: dynamodb
-          image: "amazon/dynamodb-local:1.20.0"
-          imagePullPolicy: IfNotPresent
-          ports:
-            - name: dynamodb
-              containerPort: 8000
-              protocol: TCP
-          resources:
-            limits:
-              memory: 3000Mi
-            requests:
-              cpu: 540m
-              memory: 2200Mi
 ---
 # Source: retail-store-sample-orders-chart/templates/serviceaccount.yaml
 apiVersion: v1
@@ -539,6 +610,123 @@ spec:
     app.kubernetes.io/component: service
     app.kuberneres.io/owner: retail-store-sample
 ---
+# Source: retail-store-sample-checkout-chart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkout
+  labels:
+    helm.sh/chart: checkout-0.8.4
+    app.kubernetes.io/name: checkout
+    app.kubernetes.io/instance: checkout
+    app.kubernetes.io/component: service
+    app.kuberneres.io/owner: retail-store-sample
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 3
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: checkout
+      app.kubernetes.io/instance: checkout
+      app.kubernetes.io/component: service
+      app.kuberneres.io/owner: retail-store-sample
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+      labels:
+        app.kubernetes.io/name: checkout
+        app.kubernetes.io/instance: checkout
+        app.kubernetes.io/component: service
+        app.kuberneres.io/owner: retail-store-sample
+    spec:
+      serviceAccountName: checkout
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: checkout
+          envFrom:
+            - configMapRef:
+                name: checkout
+          securityContext:
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+          image: "public.ecr.aws/aws-containers/retail-store-sample-checkout:0.8.4"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 3
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp-volume
+          resources:
+            requests:
+              cpu: 10m
+              memory: 110Mi
+            limits:
+              memory: 210Mi              
+      volumes:
+        - name: tmp-volume
+          emptyDir:
+            medium: Memory
+---
+# Source: retail-store-sample-checkout-chart/templates/redis-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkout-redis
+  labels:
+    helm.sh/chart: checkout-0.8.4
+    app.kubernetes.io/name: checkout
+    app.kubernetes.io/instance: checkout
+    app.kubernetes.io/component: redis
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: checkout
+      app.kubernetes.io/instance: checkout
+      app.kubernetes.io/component: redis
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: checkout
+        app.kubernetes.io/instance: checkout
+        app.kubernetes.io/component: redis
+    spec:
+      containers:
+        - name: redis
+          image: "redis:6.0-alpine"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 10m
+              memory: 10Mi
+            limits:
+              memory: 10Mi              
+---
 # Source: retail-store-sample-orders-chart/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -617,15 +805,15 @@ spec:
               port: 8080
             initialDelaySeconds: 45
             periodSeconds: 3
-          resources:
-            limits:
-              memory: 3000Mi
-            requests:
-              cpu: 450m
-              memory: 1700Mi
           volumeMounts:
             - mountPath: /tmp
               name: tmp-volume
+          resources:
+            requests:
+              cpu: 10m
+              memory: 310Mi
+            limits:
+              memory: 560Mi              
       volumes:
         - name: tmp-volume
           emptyDir:
@@ -684,11 +872,11 @@ spec:
               containerPort: 5432
               protocol: TCP
           resources:
-            limits:
-              memory: 2000Mi
             requests:
-              cpu: 440m
-              memory: 2000Mi
+              cpu: 10m
+              memory: 110Mi
+            limits:
+              memory: 160Mi              
       volumes:
       - name: data
         emptyDir: {}
@@ -734,11 +922,11 @@ spec:
           - name: data
             mountPath: "/var/lib/rabbitmq/mnesia"
           resources:
-            limits:
-              memory: 2500Mi
             requests:
-              cpu: 440m
-              memory: 2500Mi
+              cpu: 10m
+              memory: 160Mi
+            limits:
+              memory: 310Mi              
       volumes:
       - name: data
         emptyDir: {}
@@ -814,123 +1002,6 @@ spec:
     app.kubernetes.io/component: service
     app.kuberneres.io/owner: retail-store-sample
 ---
-# Source: retail-store-sample-checkout-chart/templates/deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: checkout
-  labels:
-    helm.sh/chart: checkout-0.8.4
-    app.kubernetes.io/name: checkout
-    app.kubernetes.io/instance: checkout
-    app.kubernetes.io/component: service
-    app.kuberneres.io/owner: retail-store-sample
-    app.kubernetes.io/managed-by: Helm
-spec:
-  replicas: 3
-  strategy:
-    rollingUpdate:
-      maxUnavailable: 1
-    type: RollingUpdate
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: checkout
-      app.kubernetes.io/instance: checkout
-      app.kubernetes.io/component: service
-      app.kuberneres.io/owner: retail-store-sample
-  template:
-    metadata:
-      annotations:
-        prometheus.io/path: /metrics
-        prometheus.io/port: "8080"
-        prometheus.io/scrape: "true"
-      labels:
-        app.kubernetes.io/name: checkout
-        app.kubernetes.io/instance: checkout
-        app.kubernetes.io/component: service
-        app.kuberneres.io/owner: retail-store-sample
-    spec:
-      serviceAccountName: checkout
-      securityContext:
-        fsGroup: 1000
-      containers:
-        - name: checkout
-          envFrom:
-            - configMapRef:
-                name: checkout
-          securityContext:
-            capabilities:
-              drop:
-              - ALL
-            readOnlyRootFilesystem: true
-            runAsNonRoot: true
-            runAsUser: 1000
-          image: "public.ecr.aws/aws-containers/retail-store-sample-checkout:0.8.4"
-          imagePullPolicy: IfNotPresent
-          ports:
-            - name: http
-              containerPort: 8080
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: 30
-            periodSeconds: 3
-          resources:
-            limits:
-              memory: 1500Mi
-            requests:
-              cpu: 490m
-              memory: 1400Mi
-          volumeMounts:
-            - mountPath: /tmp
-              name: tmp-volume
-      volumes:
-        - name: tmp-volume
-          emptyDir:
-            medium: Memory
----
-# Source: retail-store-sample-checkout-chart/templates/redis-deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: checkout-redis
-  labels:
-    helm.sh/chart: checkout-0.8.4
-    app.kubernetes.io/name: checkout
-    app.kubernetes.io/instance: checkout
-    app.kubernetes.io/component: redis
-    app.kubernetes.io/managed-by: Helm
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: checkout
-      app.kubernetes.io/instance: checkout
-      app.kubernetes.io/component: redis
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: checkout
-        app.kubernetes.io/instance: checkout
-        app.kubernetes.io/component: redis
-    spec:
-      containers:
-        - name: redis
-          image: "redis:6.0-alpine"
-          imagePullPolicy: IfNotPresent
-          ports:
-            - name: redis
-              containerPort: 6379
-              protocol: TCP
-          resources:
-            limits:
-              memory: 1500Mi
-            requests:
-              cpu: 490m
-              memory: 1400Mi
----
 # Source: retail-store-sample-assets-chart/templates/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -976,78 +1047,6 @@ spec:
     app.kubernetes.io/instance: assets
     app.kubernetes.io/component: service
     app.kuberneres.io/owner: retail-store-sample
----
-# Source: retail-store-sample-assets-chart/templates/deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: assets
-  labels:
-    helm.sh/chart: assets-0.8.4
-    app.kubernetes.io/name: assets
-    app.kubernetes.io/instance: assets
-    app.kubernetes.io/component: service
-    app.kuberneres.io/owner: retail-store-sample
-    app.kubernetes.io/managed-by: Helm
-spec:
-  replicas: 3
-  strategy:
-    rollingUpdate:
-      maxUnavailable: 1
-    type: RollingUpdate
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: assets
-      app.kubernetes.io/instance: assets
-      app.kubernetes.io/component: service
-      app.kuberneres.io/owner: retail-store-sample
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: assets
-        app.kubernetes.io/instance: assets
-        app.kubernetes.io/component: service
-        app.kuberneres.io/owner: retail-store-sample
-    spec:
-      serviceAccountName: assets
-      securityContext:
-        {}
-      containers:
-        - name: assets
-          envFrom:
-            - configMapRef:
-                name: assets
-          securityContext:
-            capabilities:
-              drop:
-              - ALL
-            readOnlyRootFilesystem: false
-          image: "public.ecr.aws/aws-containers/retail-store-sample-assets:0.8.4"
-          imagePullPolicy: IfNotPresent
-          ports:
-            - name: http
-              containerPort: 8080
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /health.html
-              port: 8080
-            initialDelaySeconds: 30
-            periodSeconds: 3
-          resources:
-            limits:
-              memory: 900Mi
-            requests:
-              cpu: 420m
-              memory: 800Mi
-          volumeMounts:
-            - mountPath: /tmp
-              name: tmp-volume
-      volumes:
-        - name: tmp-volume
-          emptyDir:
-            medium: Memory
-
 ---
 # Source: retail-store-sample-ui-chart/templates/serviceaccount.yaml
 apiVersion: v1
@@ -1168,15 +1167,15 @@ spec:
               port: 8080
             initialDelaySeconds: 45
             periodSeconds: 3
-          resources:
-            limits:
-              memory: 3000Mi
-            requests:
-              cpu: 500m
-              memory: 1750Mi
           volumeMounts:
             - mountPath: /tmp
               name: tmp-volume
+          resources:
+            requests:
+              cpu: 10m
+              memory: 360Mi
+            limits:
+              memory: 560Mi              
       volumes:
         - name: tmp-volume
           emptyDir:

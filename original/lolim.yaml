@@ -155,7 +155,7 @@ spec:
             periodSeconds: 3
           resources:
             limits:
-              memory: 70Mi
+              memory: 85Mi
             requests:
               cpu: 50m
               memory: 30Mi
@@ -221,7 +221,7 @@ spec:
               protocol: TCP
           resources:
             limits:
-              memory: 90Mi
+              memory: 105Mi
             requests:
               cpu: 32m
               memory: 50Mi              
@@ -372,7 +372,7 @@ spec:
             periodSeconds: 3
           resources:
             limits:
-              memory: 90Mi
+              memory: 105Mi
             requests:
               cpu: 32m
               memory: 60Mi
@@ -618,7 +618,7 @@ spec:
             periodSeconds: 3
           resources:
             limits:
-              memory: 85Mi
+              memory: 100Mi
             requests:
               cpu: 16m
               memory: 20Mi
@@ -734,7 +734,7 @@ spec:
             mountPath: "/var/lib/rabbitmq/mnesia"
           resources:
             limits:
-              memory: 85Mi
+              memory: 100Mi
             requests:
               cpu: 32m
               memory: 40Mi
@@ -927,7 +927,7 @@ spec:
               memory: 8Mi
             requests:
               cpu: 32m
-              memory: 10Mi
+              memory: 8Mi
 ---
 # Source: retail-store-sample-assets-chart/templates/serviceaccount.yaml
 apiVersion: v1
@@ -1168,7 +1168,7 @@ spec:
             periodSeconds: 3
           resources:
             limits:
-              memory: 85Mi
+              memory: 100Mi
             requests:
               cpu: 60m
               memory: 20Mi
