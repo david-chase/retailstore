@@ -158,7 +158,7 @@ spec:
               memory: 320Mi
             requests:
               cpu: 20m
-              memory: 64Mi
+              memory: 90Mi
           volumeMounts:
             - mountPath: /tmp
               name: tmp-volume
@@ -379,7 +379,7 @@ spec:
               memory: 512Mi
             requests:
               cpu: 5m
-              memory: 128Mi
+              memory: 64Mi
           volumeMounts:
             - mountPath: /tmp
               name: tmp-volume
@@ -426,7 +426,7 @@ spec:
               memory: 512Mi
             requests:
               cpu: 5m
-              memory: 128Mi
+              memory: 90Mi
 ---
 # Source: retail-store-sample-orders-chart/templates/serviceaccount.yaml
 apiVersion: v1
@@ -625,7 +625,7 @@ spec:
               memory: 1100Mi
             requests:
               cpu: 35m
-              memory: 40Mi
+              memory: 80Mi
           volumeMounts:
             - mountPath: /tmp
               name: tmp-volume
@@ -938,7 +938,7 @@ spec:
               memory: 512Mi
             requests:
               cpu: 10m
-              memory: 80Mi
+              memory: 64Mi
 ---
 # Source: retail-store-sample-assets-chart/templates/serviceaccount.yaml
 apiVersion: v1
@@ -1048,7 +1048,7 @@ spec:
               memory: 128Mi
             requests:
               cpu: 12m
-              memory: 30Mi
+              memory: 20Mi
           volumeMounts:
             - mountPath: /tmp
               name: tmp-volume
