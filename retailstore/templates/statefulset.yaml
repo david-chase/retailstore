@@ -5,7 +5,6 @@
 #   orders-rabbitmq
 # (3)
 # ==========================================================================
-# Source: retail-store-sample-catalog-chart/templates/mysql-statefulset.yaml
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -16,8 +15,9 @@ metadata:
     app.kubernetes.io/instance: catalog
     app.kubernetes.io/component: mysql
     app.kubernetes.io/managed-by: Helm
+    whengeeksattack.org/tag: {{ .Values.metadata.labels.tag }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.statefulsets.catalogmysql.spec.replicas }}
   serviceName: catalog-mysql
   selector:
     matchLabels:
@@ -59,15 +59,14 @@ spec:
               protocol: TCP
           resources:
             requests:
-              cpu: 60m
-              memory: 4600Mi
+              cpu: {{ .Values.statefulsets.catalogmysql.resources.requests.cpu }}
+              memory: {{ .Values.statefulsets.catalogmysql.resources.requests.memory }}
             limits:
-              memory: 710Mi
+              memory: {{ .Values.statefulsets.catalogmysql.resources.limits.memory }}
       volumes:
       - name: data
         emptyDir: {}
 ---
-# Source: retail-store-sample-orders-chart/templates/postgresql-statefulset.yaml
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -78,8 +77,9 @@ metadata:
     app.kubernetes.io/instance: orders
     app.kubernetes.io/component: postgresql
     app.kubernetes.io/managed-by: Helm
+    whengeeksattack.org/tag: {{ .Values.metadata.labels.tag }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.statefulsets.orderspostgresql.spec.replicas }}
   serviceName: orders-postgresql
   selector:
     matchLabels:
@@ -121,15 +121,14 @@ spec:
               protocol: TCP
           resources:
             requests:
-              cpu: 60m
-              memory: 110Mi
+              cpu: {{ .Values.statefulsets.orderspostgresql.resources.requests.cpu }}
+              memory: {{ .Values.statefulsets.orderspostgresql.resources.requests.memory }}
             limits:
-              memory: 160Mi              
+              memory: {{ .Values.statefulsets.orderspostgresql.resources.limits.memory }}             
       volumes:
       - name: data
         emptyDir: {}
 ---
-# Source: retail-store-sample-orders-chart/templates/rabbitmq-statefulset.yaml
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -140,8 +139,9 @@ metadata:
     app.kubernetes.io/instance: orders
     app.kubernetes.io/component: rabbitmq
     app.kubernetes.io/managed-by: Helm
+    whengeeksattack.org/tag: {{ .Values.metadata.labels.tag }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.statefulsets.ordersrabbitmq.spec.replicas }}
   serviceName: orders-rabbitmq
   selector:
     matchLabels:
@@ -171,10 +171,10 @@ spec:
             mountPath: "/var/lib/rabbitmq/mnesia"
           resources:
             requests:
-              cpu: 60m
-              memory: 210Mi
+              cpu: {{ .Values.statefulsets.ordersrabbitmq.resources.requests.cpu }}
+              memory: {{ .Values.statefulsets.ordersrabbitmq.resources.requests.memory }}
             limits:
-              memory: 310Mi              
+              memory: {{ .Values.statefulsets.ordersrabbitmq.resources.limits.memory }}            
       volumes:
       - name: data
         emptyDir: {}

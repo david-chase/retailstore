@@ -10,7 +10,6 @@
 #   ui
 # (8)
 # ==========================================================================
-# Source: retail-store-sample-assets-chart/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -22,8 +21,9 @@ metadata:
     app.kubernetes.io/component: service
     app.kuberneres.io/owner: retail-store-sample
     app.kubernetes.io/managed-by: Helm
+    whengeeksattack.org/tag: {{ .Values.metadata.labels.tag }}
 spec:
-  replicas: {{- .Values.deployments.assets.spec.replicas }}
+  replicas: {{ .Values.deployments.assets.spec.replicas }}
   strategy:
     rollingUpdate:
       maxUnavailable: 1
@@ -69,10 +69,10 @@ spec:
             periodSeconds: 3
           resources:
             requests:
-              cpu: {{- .Values.deployments.assets.resources.requests.cpu }}
-              memory: {{- .Values.deployments.assets.resources.requests.memory }}
+              cpu: {{ .Values.deployments.assets.resources.requests.cpu }}
+              memory: {{ .Values.deployments.assets.resources.requests.memory }}
             limits:
-              memory: {{- .Values.deployments.assets.resources.limits.memory }}            
+              memory: {{ .Values.deployments.assets.resources.limits.memory }}            
           volumeMounts:
             - mountPath: /tmp
               name: tmp-volume
@@ -81,7 +81,6 @@ spec:
           emptyDir:
             medium: Memory
 ---
-# Source: retail-store-sample-cart-chart/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -93,8 +92,9 @@ metadata:
     app.kubernetes.io/component: service
     app.kuberneres.io/owner: retail-store-sample
     app.kubernetes.io/managed-by: Helm
+    whengeeksattack.org/tag: {{ .Values.metadata.labels.tag }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.deployments.carts.spec.replicas }}
   strategy:
     rollingUpdate:
       maxUnavailable: 1
@@ -149,10 +149,10 @@ spec:
             periodSeconds: 3
           resources:
             requests:
-              cpu: 60m
-              memory: 360Mi
+              cpu: {{ .Values.deployments.carts.resources.requests.cpu }}
+              memory: {{ .Values.deployments.carts.resources.requests.memory }}
             limits:
-              memory: 560Mi
+              memory: {{ .Values.deployments.carts.resources.limits.memory }}
           volumeMounts:
             - mountPath: /tmp
               name: tmp-volume
@@ -161,7 +161,6 @@ spec:
           emptyDir:
             medium: Memory
 ---
-# Source: retail-store-sample-cart-chart/templates/dynamodb-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -172,8 +171,9 @@ metadata:
     app.kubernetes.io/instance: carts
     app.kubernetes.io/component: dynamodb
     app.kubernetes.io/managed-by: Helm
+    whengeeksattack.org/tag: {{ .Values.metadata.labels.tag }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.deployments.cartsdynamodb.spec.replicas }}
   selector:
     matchLabels:
       app.kubernetes.io/name: carts
@@ -196,12 +196,11 @@ spec:
               protocol: TCP
           resources:
             requests:
-              cpu: 60m
-              memory: 210Mi
+              cpu: {{ .Values.deployments.cartsdynamodb.resources.requests.cpu }}
+              memory: {{ .Values.deployments.cartsdynamodb.resources.requests.memory }}
             limits:
-              memory: 460Mi
+              memory: {{ .Values.deployments.cartsdynamodb.resources.limits.memory }}
 ---
-# Source: retail-store-sample-catalog-chart/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -213,8 +212,9 @@ metadata:
     app.kubernetes.io/component: service
     app.kuberneres.io/owner: retail-store-sample
     app.kubernetes.io/managed-by: Helm
+    whengeeksattack.org/tag: {{ .Values.metadata.labels.tag }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.deployments.catalog.spec.replicas }}
   strategy:
     rollingUpdate:
       maxUnavailable: 1
@@ -277,10 +277,10 @@ spec:
             periodSeconds: 3
           resources:
             requests:
-              cpu: 60m
-              memory: 60Mi
+              cpu: {{ .Values.deployments.catalog.resources.requests.cpu }}
+              memory: {{ .Values.deployments.catalog.resources.requests.memory }}
             limits:
-              memory: 60Mi
+              memory: {{ .Values.deployments.catalog.resources.limits.memory }}
           volumeMounts:
             - mountPath: /tmp
               name: tmp-volume
@@ -289,7 +289,6 @@ spec:
           emptyDir:
             medium: Memory
 ---
-# Source: retail-store-sample-checkout-chart/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -301,8 +300,9 @@ metadata:
     app.kubernetes.io/component: service
     app.kuberneres.io/owner: retail-store-sample
     app.kubernetes.io/managed-by: Helm
+    whengeeksattack.org/tag: {{ .Values.metadata.labels.tag }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.deployments.checkout.spec.replicas }}
   strategy:
     rollingUpdate:
       maxUnavailable: 1
@@ -354,10 +354,10 @@ spec:
             periodSeconds: 3
           resources:
             requests:
-              cpu: 60m
-              memory: 110Mi
+              cpu: {{ .Values.deployments.checkout.resources.requests.cpu }}
+              memory: {{ .Values.deployments.checkout.resources.requests.memory }}
             limits:
-              memory: 210Mi              
+              memory: {{ .Values.deployments.checkout.resources.limits.memory }}             
           volumeMounts:
             - mountPath: /tmp
               name: tmp-volume
@@ -366,7 +366,6 @@ spec:
           emptyDir:
             medium: Memory
 ---
-# Source: retail-store-sample-checkout-chart/templates/redis-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -377,8 +376,9 @@ metadata:
     app.kubernetes.io/instance: checkout
     app.kubernetes.io/component: redis
     app.kubernetes.io/managed-by: Helm
+    whengeeksattack.org/tag: {{ .Values.metadata.labels.tag }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.deployments.checkoutredis.spec.replicas }}
   selector:
     matchLabels:
       app.kubernetes.io/name: checkout
@@ -401,12 +401,11 @@ spec:
               protocol: TCP
           resources:
             requests:
-              cpu: 60m
-              memory: 10Mi
+              cpu: {{ .Values.deployments.checkoutredis.resources.requests.cpu }}
+              memory: {{ .Values.deployments.checkoutredis.resources.requests.memory }}
             limits:
-              memory: 10Mi       
+              memory: {{ .Values.deployments.checkoutredis.resources.limits.memory }}      
 ---
-# Source: retail-store-sample-orders-chart/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -418,8 +417,9 @@ metadata:
     app.kubernetes.io/component: service
     app.kuberneres.io/owner: retail-store-sample
     app.kubernetes.io/managed-by: Helm
+    whengeeksattack.org/tag: {{ .Values.metadata.labels.tag }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.deployments.orders.spec.replicas }}
   strategy:
     rollingUpdate:
       maxUnavailable: 1
@@ -486,10 +486,10 @@ spec:
             periodSeconds: 3
           resources:
             requests:
-              cpu: 60m
-              memory: 310Mi
+              cpu: {{ .Values.deployments.orders.resources.requests.cpu }}
+              memory: {{ .Values.deployments.orders.resources.requests.memory }}
             limits:
-              memory: 510Mi
+              memory: {{ .Values.deployments.orders.resources.limits.memory }}
           volumeMounts:
             - mountPath: /tmp
               name: tmp-volume
@@ -498,7 +498,6 @@ spec:
           emptyDir:
             medium: Memory
 ---
-# Source: retail-store-sample-ui-chart/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -510,8 +509,9 @@ metadata:
     app.kubernetes.io/component: service
     app.kuberneres.io/owner: retail-store-sample
     app.kubernetes.io/managed-by: Helm
+    whengeeksattack.org/tag: {{ .Values.metadata.labels.tag }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.deployments.ui.spec.replicas }}
   strategy:
     rollingUpdate:
       maxUnavailable: 1
@@ -568,10 +568,10 @@ spec:
             periodSeconds: 3
           resources:
             requests:
-              cpu: 60m
-              memory: 310Mi
+              cpu: {{ .Values.deployments.ui.resources.requests.cpu }}
+              memory: {{ .Values.deployments.ui.resources.requests.memory }}
             limits:
-              memory: 560Mi              
+              memory: {{ .Values.deployments.ui.resources.limits.memory }}             
           volumeMounts:
             - mountPath: /tmp
               name: tmp-volume
