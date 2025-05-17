@@ -1,0 +1,35 @@
+# Values.yaml for retailstore app
+# This is Optimized, 1 replica
+deployments:
+  assets:
+    spec: 
+      replicas: 1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
+  carts:
+    spec: 
+      replicas: 1
+    resources:
+      limits:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+        cpu: 100m
+        memory: 128Mi
+  carts-dynamodb:
+    resources:
+  catalog:
+    resources:
+  checkout:
+    resources:
+  checkout-redis:
+    resources:
+  orders:
+    resources:
+  ui:
+    resources:
